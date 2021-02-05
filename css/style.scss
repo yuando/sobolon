@@ -1,0 +1,1006 @@
+@charset "utf-8";
+
+/*========================================================================================
+# mixins
+==========================================================================================*/
+
+//マップ型変数breakpointsを定義
+$breakpoints: (
+//キー　　値
+  'sm': 'screen and (max-width: 767px)', //767px以下（スマホ）用の表示
+  'md': 'screen and (min-width: 768px)' //768px以上（タブレット・PC）用の表示
+) !default;
+
+//メディアクエリ用のmixinを定義。デフォ値はmd
+@mixin mq($breakpoint: md) {
+//map-get(マップ型変数, キー)で値を取得
+  @media #{map-get($breakpoints, $breakpoint)} {
+    //この中をカスタムできる
+    @content;
+  }
+}
+
+/*========================================================================================
+# colors
+==========================================================================================*/
+$primary-color: #3EA1D1;
+$font-color: #333;
+
+/*========================================================================================
+# base - 全体に共通するスタイル
+==========================================================================================*/
+@include mq(sm) {
+  .is-pc {
+    display: none; //スマホのときは、改行(is-pc)しない。
+  }
+}
+
+@include mq(md) {
+  .is-sp {
+    display: none; //PCのときは、改行(is-sp)しない。
+  }
+}
+
+body {
+  font-size: 16px;
+  color: $font-color;
+  font-family: "ヒラギノ明朝 ProN", serif;
+  line-height: 1.6875; //27av/16px
+}
+
+img {
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: content-box; //reset.cssでは ”box-sizing:border-box;” を指定しているためpaddingを含めて1200pxになってしまう。なので、要素をめちゃめちゃ広げてもpaddingの80pxを引いた1120pxにまでしかならない。そこでデフォルト値のcontent-boxを指定する。
+
+  @include mq(sm) {
+    padding: 0 15px;
+  }
+}
+
+.main {
+  padding-top: 70px; //mainが隠れないようにヘッダー分の高さをつける。
+
+  @include mq(sm) {
+    padding-top: 60px;
+  }
+}
+
+.section-wrapper {
+  margin-top: 160px;
+
+  @include mq(sm) {
+    margin-top: 96px;
+  }
+}
+
+.section-title {
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1; //mt160pxと文字の高さで誤差が生まれないようにline-heightを1にする
+
+  &::after {
+    content: "";
+    display: block;
+    background-color: $primary-color;
+    height: 1px;
+    width: 60px;
+    margin: 16px auto 0; //位置を調節
+  }
+
+  @include mq(sm) {
+    font-size: 30px;
+  }
+}
+
+.link-btn {
+  display: inline-block; //普通はリンク要素にはブロック要素をつけるが、リンクを囲っている箱に対してtacを適用するためにinline-blockを指定。
+  width: 157px;
+  height: 46px;
+  line-height: 1;
+  color: $primary-color;
+  background: #fff;
+  border: solid 1px $primary-color;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: .14em;
+  padding: 16px 54px;
+  transition: .3s;
+
+  @include mq(md) {
+    &:hover {
+      color: #fff;
+      background: $primary-color;
+      transition: .3s;
+    }
+  }
+}
+
+.text-primary {
+  color: $primary-color;
+}
+
+/*========================================================================================
+# header
+==========================================================================================*/
+.header {
+  background: #fff;
+  position: fixed; //上部固定
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100; //一番上に来るように
+
+  /* ドロワーメニュー */
+  .drawer-hamburger {
+    .drawer--right & { //.drawer--rightがついている.drawer-hamburger
+      right: 3px; //アイコンの位置調整
+    }
+  }
+
+  .drawer-hamburger-icon {
+    background-color: $primary-color;
+
+    .drawer-open & { //.drawer-openがついている.drawer-hamburger-icon
+      background-color: transparent; //真ん中の線を透過
+    }
+
+    &::before,
+    &::after {
+      background-color: $primary-color;
+    }
+  }
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  height: 70px;
+
+  @include mq(sm) {
+    height: 60px;
+  }
+}
+
+.header-logo {
+  padding: 25px 0px;
+  width: 120px;
+
+  @include mq(sm) {
+    padding: 20px 0;
+  }
+}
+
+.header-nav {
+  margin-left: auto;
+
+  @include mq(sm) {
+    top: 60px; //drawer-navにposition:fixed;が指定されているのでtopがきく
+    background-color: $primary-color;
+  }
+}
+
+.header-nav-list {
+  @include mq(md) {
+    display: flex;
+  }
+
+  @include mq(sm) {
+    margin-top: 46px;
+    padding-right: 20px;
+  }
+}
+
+.header-nav-item {
+  @include mq(md) {
+    & + & {
+      margin-left: 48px;
+    }
+  }
+
+  @include mq(sm) {
+    & + & {
+      margin-top: 40px;
+    }
+  }
+}
+
+.header-nav-item-link {
+  display: block;
+  color: $font-color;
+  letter-spacing: .1em;
+  transition: .3s;
+
+  @include mq(md) {
+    &:hover {
+      color: $primary-color;
+      transition: .3s;
+    }
+  }
+
+  @include mq(sm) {
+    color: #fff;
+    font-size: 18px;
+    text-align: right;
+  }
+}
+
+/*==================================================================================
+# fv
+=================================================================================== */
+.fv {
+  @include mq(md) {
+    position: relative; //top-messageをabsoluteさせるため
+  }
+}
+
+.fv-picture {
+  @include mq(md) {
+    padding-top: 55%; //画角計算（660px/1200px*100）高さ÷幅✖️100
+    background: url(../img/top.png) top right / 82.5% no-repeat; //（990px/1200px）分だけ表示
+  }
+
+  @include mq(sm) {
+    padding-top: 120%;
+    background: url(../img/sp/top.png) center center / cover;
+  }
+}
+
+.fv-message {
+  @include mq(md) {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #fff;
+    padding: 92px 40px 92px 0;
+  }
+}
+
+.fv-message-title {
+  font-size: 26px;
+  font-weight: bold;
+
+  @include mq(sm) {
+    margin-top: 40px;
+  }
+}
+
+.fv-message-text {
+  margin-top: 10px;
+}
+
+/*==================================================================================
+# concept
+=================================================================================== */
+.concept-inner {
+  @include mq(md) {
+    display: flex;
+    align-items: center;
+    margin-top: 64px;
+  }
+
+  @include mq(sm) {
+    margin-top: 48px;
+  }
+}
+
+.concept-img {
+  @include mq(md) {
+    flex: 0 0 50%;
+  }
+}
+
+.concept-message {
+  @include mq(md) {
+    flex: 0 1 50%; //50%の幅が余っていなかったら、縮小しても良いを意味する1
+    margin-left: 6.667%; //カンプ通り80pxにするとtab版で余白が広すぎてしまうので1200px分の80pxを%でmlを指定
+  }
+}
+
+.concept-title {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.7;
+
+  @include mq(sm) {
+    margin-top: 40px;
+  }
+}
+
+.concept-text {
+  margin-top: 48px;
+
+  @include mq(sm) {
+    margin-top: 32px;
+  }
+}
+
+/*==================================================================================
+# feature
+=================================================================================== */
+.feature-list {
+  margin-top: 64px;
+
+  @include mq(md) {
+    display: flex;
+  }
+
+  @include mq(sm) {
+    margin-top: 48px;
+  }
+}
+
+.feature-item {
+
+  @include mq(md) {
+    flex: 0 0 28.333%; //340px/1200px
+    & + & {
+      margin-left: 7.5%; //90px/1200px
+    }
+  }
+
+  @include mq(sm) {
+    & + & {
+      margin-top: 48px;
+    }
+  }
+}
+
+.feature-item-link {
+  display: block;
+  color: #333;
+  background-color: #fff;
+  box-shadow: 3px 3px 15px rgba(96, 96, 96, 0.16); //xpx,ypx,ぼかしpx,色
+
+  @include mq(md) {
+    &:hover {
+      .feature-img > img { //.feature-imgの中にあるimgに対して
+        transform: scale(1.05);
+        transition: .3s;
+      }
+    }
+  }
+}
+
+.feature-img {
+  overflow: hidden; //はみ出した部分を隠す
+
+  > img {
+    transition: .3s;
+  }
+}
+
+.feature-text {
+  font-weight: bold;
+  text-align: center;
+  padding: 30px 0px;
+}
+
+/*==================================================================================
+# about
+=================================================================================== */
+.about {
+  color: #fff;
+  background: url(../img/bg.png) center center / cover;
+  margin-top: 160px;
+  position: relative;
+
+  &::before { //写真を暗くするフィルター
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.12);
+  }
+
+  @include mq(sm) {
+    margin-top: 96px;
+    background: url(../img/sp/bg.png) center center / cover;
+  }
+}
+
+.about-inner { //文章は写真の上に来るように
+  position: relative;
+  padding: 126px 0 125px 40px;
+
+  @include mq(sm) {
+    padding: 180px 20px 55px 15px;
+  }
+}
+
+.about-title {
+  font-size: 22px;
+  font-weight: bold;
+
+  @include mq(sm) {
+    font-size: 20px;
+  }
+}
+
+.about-text {
+  margin-top: 40px;
+
+  @include mq(sm) {
+    margin-top: 32px;
+    font-size: 14px;
+  }
+}
+
+/*==================================================================================
+# products
+=================================================================================== */
+.products-list {
+  max-width: 940px;
+  margin: 0 auto;
+  box-sizing: content-box;
+
+  @include mq(md) {
+    margin-top: 64px;
+    display: flex;
+    justify-content: center;
+    padding: 0 40px;
+  }
+
+  @include mq(sm) {
+    margin-top: 48px;
+    padding: 0 58px;
+  }
+}
+
+.products-item {
+
+  @include mq(md) {
+    flex: 0 0 27.659%; //260px/940px
+  
+    & + & {
+      margin-left: 80px;
+    }
+  }
+
+  @include mq(sm) {
+    & + & {
+      margin-top: 48px;
+    }
+  }
+}
+
+.products-item-link {
+  display: block;
+
+  @include mq(md) {
+    &:hover {
+      .products-img > img { //.products-imgの中にあるimgに対して
+        transform: scale(1.05);
+        transition: .3s;
+      }
+    }
+  }
+}
+
+.products-img {
+  overflow: hidden;
+
+  > img {
+    transition: .3s;
+  }
+}
+
+.products-text {
+  margin-top: 24px;
+  font-size: 14px;
+  color: $font-color;
+}
+
+.products-cost {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #989898;
+
+  @include mq(sm) {
+    margin-top: 16px;
+  }
+}
+
+.util-link {
+  margin-top: 48px;
+  text-align: center;
+}
+
+/*==================================================================================
+# news
+=================================================================================== */
+.news {
+  max-width: 1040px;
+  margin: 160px auto 0;
+
+  @include mq(sm) {
+    margin: 96px auto 0;
+    padding: 0 33px;
+  }
+}
+
+.news-items {
+  margin-top: 30px;
+
+  @include mq(sm) {
+    margin-top: 24px;
+  }
+}
+
+.news-item-link {
+  border-bottom: solid 1px #E0E0E0;
+
+  @include mq(md) {
+    display: flex;
+    align-items: center;
+    padding: 20px 0px;
+
+    &:hover {
+      .news-img > img { //.news-imgの中にあるimgに対して
+        transform: scale(1.05);
+        transition: .3s;
+      }
+    }
+  }
+
+  @include mq(sm) {
+    display: block;
+    padding: 24px 0px;
+  }
+}
+
+.news-img {
+  overflow: hidden;
+
+  > img {
+    transition: .3s;
+  }
+
+  @include mq(md) {
+    flex: 0 0 260px;
+  }
+}
+
+.news-body {
+  @include mq(md) {
+    flex: 0 1 100%;
+    margin-left: 40px;
+  }
+
+  @include mq(sm) {
+    margin-top: 24px;
+  }
+}
+
+.news-date {
+  font-size: 14px;
+  color: $font-color;
+}
+
+.news-title {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  color: $font-color;
+
+  @include mq(sm) {
+    font-size: 16px;
+  }
+}
+
+.news-text {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #888888;
+
+  @include mq(sm) {
+    font-size: 14px;
+  }
+}
+
+/*==================================================================================
+# concept2
+=================================================================================== */
+.concept2-inner {
+  @include mq(md) {
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+  }
+}
+
+.concept2-img {
+  @include mq(md) {
+    flex: 0 0 50%;
+  }
+}
+
+.concept2-message {
+  @include mq(md) {
+    flex: 0 1 50%; //50%の幅が余っていなかったら、縮小しても良いを意味する1
+    margin-right: 6.667%; //カンプ通り80pxにするとtab版で余白が広すぎてしまうので1200px分の80pxを%でmlを指定
+  }
+
+  @include mq(sm) {
+    margin-top: 40px;
+  }
+}
+
+.concept2-title {
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1.7;
+
+  @include mq(sm) {
+    font-size: 20px;
+  }
+}
+
+.concept2-text {
+  margin-top: 40px;
+
+  @include mq(sm) {
+    margin-top: 32px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+/*==================================================================================
+# contact
+=================================================================================== */
+.contact-wrapper {
+  margin-top: 225px;
+  background: url(../img/contact.png) center center / cover;
+  padding: 70px 0 85px;
+
+  @include mq(sm) {
+    margin-top: 96px;
+    padding: 57px 0;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    width: 100%;
+    border: 0;
+    font-size: 16px; //入力される文字サイズ
+    padding: 3px 8px;
+    box-shadow: 5px 6px 15px rgba(96, 96, 96, 0.16);
+    border-radius: 2px;
+  }
+
+  input[type="text"],
+  input[type="email"] {
+    height: 40px;
+  }
+
+  textarea {
+    min-height: 122px; //最低でも122pxの高さ。
+    resize: vertical; //垂直方向にのみリサイズ可能。
+  }
+} 
+
+.form-wrapper {
+  margin-top: 64px;
+
+  @include mq(sm) {
+    margin-top: 30px;
+  }
+}
+
+.form-text {
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: .1em;
+}
+
+.form-text-caution {
+  color: #E7728E;
+  font-size: 16px;
+}
+
+.form-list {
+  max-width: 510px;
+  margin: 30px auto 0;
+
+  @include mq(sm) {
+    padding: 0 28px;
+  }
+}
+
+.form-item {
+  @include mq(md) {
+    display: flex;
+    justify-content: center;
+  }
+
+  & + & {
+    margin-top: 32px;
+  } 
+}
+
+.form-item-title {
+  @include mq(md) {
+    flex: 0 1 100%;
+  }
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: rgba(62, 161, 209, 0.7);
+  height: 40px;
+  line-height: 40px; //文字を上下中央に
+  text-align: center;
+  position: relative;
+
+  @include mq(md) {
+    
+    &::after { //三角形
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      right: -8px;
+      border-style: solid;
+      border-width: 20px 0 20px 8px;
+      border-color: transparent transparent transparent rgba(62, 161, 209, 0.7);
+    }
+  }
+
+  @include mq(sm) {
+    display: inline-block;
+    font-size: 14px;
+    height: 32px;
+    line-height: 32px; //文字を上下中央に
+    padding: 0 15px;
+  }
+  
+}
+
+.form-item-caution {
+  color: #E7728E;
+  font-size: 12px;
+  vertical-align: super; //文字の右上に配置
+  line-height: 1; //line-heightを1に戻す。文字は40pxのまま。
+}
+
+.form-item-input {
+  @include mq(md) {
+    flex: 0 0 320px;
+    margin-left: 18px;
+  }
+
+  @include mq(sm) {
+    margin-top: 3px;
+  }
+}
+
+.form-radio-wrap {
+  display: inline-flex; //ブロック要素ではなくインライン要素にする
+  border: solid 1px #fff;
+  border-radius: 1px;
+  box-shadow: 5px 5px 15px rgba(96, 96, 96, 0.16);
+}
+
+//displayをnoneで消すとタブでフォーカスが効かなくなってしまうのでopacityを0にする。opacity0だけだと要素がいて邪魔になるのでabsoluteで浮かす
+
+.form-radio {
+  position: relative;
+}
+
+.form-radio-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+
+  &:checked + .form-radio-part{ //checkedされているinputの次にあるform-radio-part(法人)に
+    background-color: $primary-color;
+    color: #fff;
+    border-radius: 1px;
+  }
+
+  &:focus + .form-radio-part { //focusされているinputの次にあるform-radio-partに
+    outline: -webkit-focus-ring-color auto 1px;
+  }
+}
+
+.form-radio-part {
+  display: block;
+  background-color: #fff;
+  color: $primary-color;
+  height: 38px;
+  line-height: 38px; //文字を上下真ん中に
+  width: 80px;
+  text-align: center;
+  transition: .3s;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.form-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.form-footer-text {
+  
+}
+
+.form-privacy {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  vertical-align: middle;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.form-privacy-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+
+  &:checked + .form-privacy-part {
+    width: 10px;
+    border-top: 0px; //上の線を消す
+    border-left: 0px; //左の線を消す
+    background-color: transparent;
+    transform: rotate(45deg);
+    top: -5px;
+    left: 5px;
+  }
+
+  &:focus + .form-privacy-part { //focusされているinputの次にあるform-privacy-partに
+    outline: -webkit-focus-ring-color auto 1px;
+  }
+
+  &:checked:focus + .form-privacy-part { //checkかつfocusされているとき
+    outline: none;
+  }
+}
+
+.form-privacy-part {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background-color: #fff;
+  border: solid 1px $primary-color;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  transition: .2s;
+}
+
+.form-privacy-link {
+  color: $primary-color;
+  text-decoration: underline; //デフォルトに戻す
+  transition: .3s;
+
+  &:hover {
+    opacity: .7;
+    transition: .3s;
+  }
+}
+
+.form-footer-btn {
+  margin-top: 50px;
+  
+  @include mq(sm) {
+    margin-top: 26px;
+  }
+}
+
+button {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+/*==================================================================================
+# footer
+=================================================================================== */
+.footer {
+  background-color: #F7F7F7;
+  padding: 42px 0 12px;
+
+  @include mq(sm) {
+    padding: 40px 0 17px;
+  }
+}
+
+.footer-logo {
+  width: 120px;
+  margin: 0 auto;
+}
+
+.footer-nav-list {
+  margin-top: 18px;
+
+  @include mq(md) {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.footer-nav-item {
+  @include mq(md) {
+    & + & {
+      margin-left: 30px;
+    }
+  }
+
+  @include mq(sm) {
+    text-align: center;
+
+    & + & {
+      margin-top: 8px;
+    }
+  }
+}
+
+.footer-nav-item-link {
+  display: block;
+  color: $font-color;
+  font-size: 12px;
+  transition: .3s;
+
+  &:hover {
+    opacity: .7;
+    transition: .3s;
+  }
+}
+
+.footer-sns-list {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+
+  @include mq(sm) {
+    margin-top: 18px;
+  }
+}
+
+.footer-sns-item {
+  & + & {
+    margin-left: 40px;
+  }
+}
+
+.footer-sns-item-link {
+  display: block;
+  color: $primary-color;
+  font-size: 24px;
+  transition: .3s;
+
+  &:hover {
+    opacity: .7;
+    transition: .3s;
+  }
+}
+
+.footer-copyright {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
